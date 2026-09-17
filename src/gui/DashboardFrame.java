@@ -47,8 +47,7 @@ public class DashboardFrame extends JFrame {
 
         for (String item : getMenuItemsForRole()) {
             JButton button = new JButton(item);
-            button.addActionListener(e
-                    -> JOptionPane.showMessageDialog(this, item + " screen coming soon."));
+            button.addActionListener(e -> handleMenuClick(item));
             sidebar.add(button);
         }
 
@@ -92,4 +91,15 @@ public class DashboardFrame extends JFrame {
                 return new String[]{};
         }
     }
+
+    private void handleMenuClick(String item) {
+        switch (item) {
+            case "Book Appointment":
+                new BookAppointmentFrame(currentUser).setVisible(true);
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, item + " screen coming soon.");
+        }
+    }
+
 }

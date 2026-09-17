@@ -72,6 +72,13 @@ public class LoginFrame extends JFrame {
 
         loginButton.addActionListener(this::handleLogin);
 
+        JButton registerButton = new JButton("Create New Account");
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        panel.add(registerButton, gbc);
+        registerButton.addActionListener(e -> new RegisterFrame().setVisible(true));
+
         add(panel);
     }
 
@@ -91,15 +98,16 @@ public class LoginFrame extends JFrame {
         // TODO: replace this stub with real lookup once file-based
         // user storage (Kaung's part) is ready. For now this just
         // demonstrates routing to the right dashboard by role.
-        User loggedInUser = authenticateStub(username, selectedRole);
+        Account account = UserStore.findByUsername(username, password);
 
-        if (loggedInUser == null) {
+        if (account == null) {
             JOptionPane.showMessageDialog(this,
-                    "Invalid credentials.",
+                    "Invalid username or password. Please register first if you don't have an account.",
                     "Login Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        User loggedInUser = account.getUser();
         JOptionPane.showMessageDialog(this,
                 "Welcome, " + loggedInUser.getProfileSummary());
 
@@ -107,19 +115,4 @@ public class LoginFrame extends JFrame {
         dispose();
     }
 
-    // Temporary stub so the screen is testable before file I/O exists.
-    private User authenticateStub(String username, String role) {
-        switch (role) {
-            case "Admin Staff":
-                return new AdminStaff("A001", username, username + "@email.com", "0000000000");
-            case "Medical Manager":
-                return new MedicalManager("M001", username, username + "@email.com", "0000000000", "General");
-            case "Doctor":
-                return new Doctor("D001", username, username + "@email.com", "0000000000", "General", "LIC000");
-            case "Patient":
-                return new Patient("P001", username, username + "@email.com", "0000000000", "2000-01-01", "MRN000");
-            default:
-                return null;
-        }
-    }
 }

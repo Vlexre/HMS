@@ -97,6 +97,15 @@ public class DashboardFrame extends JFrame {
             case "Book Appointment":
                 new BookAppointmentFrame(currentUser).setVisible(true);
                 break;
+            case "My Records":
+                new MyRecordsFrame(currentUser).setVisible(true);
+                break;
+            case "My Prescriptions":
+                new MyPrescriptionsFrame().setVisible(true);
+                break;
+            case "My Appointments":
+                new DoctorAppointmentsFrame(currentUser).setVisible(true);
+                break;
             default:
                 JOptionPane.showMessageDialog(this, item + " screen coming soon.");
         }

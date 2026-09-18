@@ -1,0 +1,8 @@
+package persistence;
+
+public class InvalidAccountDataException extends AccountException {
+
+    public InvalidAccountDataException(String message) {
+        super(message);
+    }
+}

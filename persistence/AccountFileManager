@@ -1,0 +1,90 @@
+package persistence;
+
+import domain.Account;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AccountFileManager {
+
+    public void saveAccounts(List<Account> accounts, String filePath) throws AccountFileException {
+        BufferedWriter writer = null;
+
+        try {
+            writer = new BufferedWriter(new FileWriter(filePath));
+
+            for (int i = 0; i < accounts.size(); i++) {
+                Account account = accounts.get(i);
+                String line = account.getUsername() + "," + account.getPassword() + "," + account.getRole();
+                writer.write(line);
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            throw new AccountFileException("Could not save accounts to " + filePath);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    // ignore close error
+                }
+            }
+        }
+    }
+
+    public List<Account> loadAccounts(String filePath) throws AccountFileException, InvalidAccountDataException {
+        List<Account> accounts = new ArrayList<Account>();
+        BufferedReader reader = null;
+
+        try {
+            reader = new BufferedReader(new FileReader(filePath));
+            String line = reader.readLine();
+            int lineNumber = 0;
+
+            while (line != null) {
+                lineNumber++;
+
+                if (!line.trim().equals("")) {
+                    String[] parts = line.split(",");
+
+                    if (parts.length < 3) {
+                        throw new InvalidAccountDataException("Line " + lineNumber + " is missing data: " + line);
+                    }
+
+                    String username = parts[0].trim();
+                    String password = parts[1].trim();
+                    String role = parts[2].trim();
+
+                    if (username.equals("") || password.equals("") || role.equals("")) {
+                        throw new InvalidAccountDataException("Line " + lineNumber + " has an empty field: " + line);
+                    }
+
+                    Account account = new Account(username, password, role);
+                    accounts.add(account);
+                }
+
+                line = reader.readLine();
+            }
+
+        } catch (IOException e) {
+            // file might not exist yet on first run, just return empty list
+            return accounts;
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    // ignore close error
+                }
+            }
+        }
+
+        return accounts;
+    }
+}

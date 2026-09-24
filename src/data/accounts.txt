@@ -1,1 +1,4 @@
 Al,222,Patient,P001,la mal,la222@gmail.com,10235484,2054-15-12,57848
+ahmed,111,Patient,P002,Ahmed aslam,ahmed123@gmail.com,884875184,2000-10-20,1848
+ali,333,Doctor,D001,ali,ali@gmail.com,55484648,dintest,549497414
+ahmedd,111,Doctor,D002,ahmed aslem,ahmedaslem@gmail.com,2333335,maind,99999

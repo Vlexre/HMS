@@ -1,0 +1,8 @@
+package persistence;
+
+public class AccountFileException extends AccountException {
+
+    public AccountFileException(String message) {
+        super(message);
+    }
+}

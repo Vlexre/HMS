@@ -1,16 +1,35 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.List;
+import persistence.AccountFileException;
+import persistence.AccountFileManager;
+import persistence.InvalidAccountDataException;
 
-// TEMPORARY in-memory storage. Replace with real .txt file
-// read/write once Kaung's file I/O utilities are ready.
 public class UserStore {
 
+    // Relative path — a "data" folder will be created next to
+    // wherever the program is run from.
+    private static final String FILE_PATH = "data/accounts.txt";
+    private static final AccountFileManager fileManager = new AccountFileManager();
     private static final ArrayList<Account> accounts = new ArrayList<>();
-    private static int nextId = 1;
+
+    // Loads existing accounts from the .txt file the first time
+    // this class is used, so registered users persist across runs.
+    static {
+        try {
+            List<Account> loaded = fileManager.loadAccounts(FILE_PATH);
+            accounts.addAll(loaded);
+        } catch (AccountFileException | InvalidAccountDataException ex) {
+            // First run (file doesn't exist) or corrupted file —
+            // start with an empty list rather than crashing the app.
+            System.err.println("Could not load accounts: " + ex.getMessage());
+        }
+    }
 
     public static void add(Account account) {
         accounts.add(account);
+        persist();
     }
 
     public static Account findByUsername(String username, String password) {
@@ -33,6 +52,30 @@ public class UserStore {
     }
 
     public static String generateNextUserId(String rolePrefix) {
-        return rolePrefix + String.format("%03d", nextId++);
+        int max = 0;
+        for (Account account : accounts) {
+            String id = account.getUser().getUserId();
+            if (id != null && id.startsWith(rolePrefix)) {
+                try {
+                    int num = Integer.parseInt(id.substring(rolePrefix.length()));
+                    if (num > max) {
+                        max = num;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // id didn't end in a number, skip it
+                }
+            }
+        }
+        return rolePrefix + String.format("%03d", max + 1);
+    }
+
+    // Writes the full in-memory account list back to the .txt file.
+    // Called after every registration so data survives a restart.
+    private static void persist() {
+        try {
+            fileManager.saveAccounts(accounts, FILE_PATH);
+        } catch (AccountFileException ex) {
+            System.err.println("Could not save accounts: " + ex.getMessage());
+        }
     }
 }

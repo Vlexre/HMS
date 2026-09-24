@@ -19,8 +19,13 @@ public class AccountFileManager {
         BufferedWriter writer = null;
 
         try {
-            writer = new BufferedWriter(new FileWriter(filePath));
+            java.io.File file = new java.io.File(filePath);
+            java.io.File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
 
+            writer = new BufferedWriter(new FileWriter(filePath));
             for (Account account : accounts) {
                 User user = account.getUser();
                 String line = account.getUsername() + "," + account.getPassword() + ","
@@ -117,7 +122,7 @@ public class AccountFileManager {
     }
 
     private User buildUser(String role, String userId, String name, String email,
-                            String phone, String extra1, String extra2) {
+            String phone, String extra1, String extra2) {
         switch (role) {
             case "Admin Staff":
                 return new AdminStaff(userId, name, email, phone);

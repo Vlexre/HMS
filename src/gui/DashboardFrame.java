@@ -106,6 +106,9 @@ public class DashboardFrame extends JFrame {
             case "My Appointments":
                 new DoctorAppointmentsFrame(currentUser).setVisible(true);
                 break;
+            case "Manage Users":
+                new ManageUsersFrame().setVisible(true);
+                break;
             default:
                 JOptionPane.showMessageDialog(this, item + " screen coming soon.");
         }

@@ -32,6 +32,25 @@ public class UserStore {
         persist();
     }
 
+    public static void update(String username, Account updatedAccount) {
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts.get(i).getUsername().equalsIgnoreCase(username)) {
+                accounts.set(i, updatedAccount);
+                break;
+            }
+        }
+        persist();
+    }
+
+    public static void delete(String username) {
+        accounts.removeIf(a -> a.getUsername().equalsIgnoreCase(username));
+        persist();
+    }
+
+    public static ArrayList<Account> getAll() {
+        return accounts;
+    }
+
     public static Account findByUsername(String username, String password) {
         for (Account account : accounts) {
             if (account.getUsername().equalsIgnoreCase(username)
@@ -78,4 +97,5 @@ public class UserStore {
             System.err.println("Could not save accounts: " + ex.getMessage());
         }
     }
+
 }

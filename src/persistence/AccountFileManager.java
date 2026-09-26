@@ -1,8 +1,6 @@
 package persistence;
 
 import gui.Account;
-import models.*;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -10,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import models.*;
 
 public class AccountFileManager {
 
@@ -61,7 +60,7 @@ public class AccountFileManager {
                 lineNumber++;
 
                 if (!line.trim().equals("")) {
-                    String[] parts = line.split(",");
+                    String[] parts = line.split(",", -1);
 
                     if (parts.length < 8) {
                         throw new InvalidAccountDataException("Line " + lineNumber + " is missing data: " + line);
@@ -124,7 +123,7 @@ public class AccountFileManager {
     private User buildUser(String role, String userId, String name, String email,
             String phone, String extra1, String extra2) {
         switch (role) {
-            case "Admin Staff":
+            case "Administrative Staff":
                 return new AdminStaff(userId, name, email, phone);
             case "Medical Manager":
                 return new MedicalManager(userId, name, email, phone, extra1);

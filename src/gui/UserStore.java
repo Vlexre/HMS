@@ -61,6 +61,17 @@ public class UserStore {
         return null;
     }
 
+    // Looks up an account by username only (no password check) — used
+    // to refresh the dashboard after the logged-in user edits their profile.
+    public static Account findAccountByUsername(String username) {
+        for (Account account : accounts) {
+            if (account.getUsername().equalsIgnoreCase(username)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
     public static boolean usernameExists(String username) {
         for (Account account : accounts) {
             if (account.getUsername().equalsIgnoreCase(username)) {

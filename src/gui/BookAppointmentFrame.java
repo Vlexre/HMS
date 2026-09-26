@@ -1,12 +1,13 @@
 package gui;
 
-import models.Appointment;
-import models.User;
-import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import javax.swing.*;
+import models.Appointment;
+import models.Doctor;
+import models.User;
 
 public class BookAppointmentFrame extends JFrame {
 
@@ -31,30 +32,40 @@ public class BookAppointmentFrame extends JFrame {
 
         JLabel titleLabel = new JLabel("New Appointment", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
         panel.add(titleLabel, gbc);
         gbc.gridwidth = 1;
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         panel.add(new JLabel("Doctor ID:"), gbc);
         doctorIdField = new JTextField(12);
-        gbc.gridx = 1; gbc.gridy = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
         panel.add(doctorIdField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panel.add(new JLabel("Date (yyyy-MM-dd):"), gbc);
         dateField = new JTextField(12);
-        gbc.gridx = 1; gbc.gridy = 2;
+        gbc.gridx = 1;
+        gbc.gridy = 2;
         panel.add(dateField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         panel.add(new JLabel("Time (HH:mm):"), gbc);
         timeField = new JTextField(12);
-        gbc.gridx = 1; gbc.gridy = 3;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
         panel.add(timeField, gbc);
 
         JButton bookButton = new JButton("Book");
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
         panel.add(bookButton, gbc);
 
         bookButton.addActionListener(e -> handleBooking());
@@ -80,6 +91,19 @@ public class BookAppointmentFrame extends JFrame {
 
         if (!time.matches("([01]\\d|2[0-3]):[0-5]\\d")) {
             showError("Time must be in HH:mm 24-hour format (e.g. 14:30).");
+            return;
+        }
+
+        boolean doctorExists = false;
+        for (Account account : UserStore.getAll()) {
+            if (account.getUser().getUserId().equalsIgnoreCase(doctorId)
+                    && account.getUser() instanceof Doctor) {
+                doctorExists = true;
+                break;
+            }
+        }
+        if (!doctorExists) {
+            showError("No doctor found with ID \"" + doctorId + "\".");
             return;
         }
 

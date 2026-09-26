@@ -10,7 +10,7 @@ public class Appointment implements Comparable<Appointment> {
     private String status;
 
     public Appointment(String appointmentId, String patientId, String doctorId,
-                       String date, String time, String status) {
+            String date, String time, String status) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.doctorId = doctorId;
@@ -45,6 +45,14 @@ public class Appointment implements Comparable<Appointment> {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     @Override

@@ -6,13 +6,18 @@ import models.*;
 
 public class DashboardFrame extends JFrame {
 
+    private Account currentAccount;
     private User currentUser;
 
-    public DashboardFrame(User user) {
-        this.currentUser = user;
+    private JLabel welcomeLabel;
+    private JTextArea summaryArea;
+
+    public DashboardFrame(Account account) {
+        this.currentAccount = account;
+        this.currentUser = account.getUser();
 
         setTitle("HMS Dashboard - " + currentUser.getRole());
-        setSize(700, 450);
+        setSize(700, 680);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -30,7 +35,7 @@ public class DashboardFrame extends JFrame {
         header.setBackground(new Color(30, 90, 150));
         header.setPreferredSize(new Dimension(0, 60));
 
-        JLabel welcomeLabel = new JLabel(
+        welcomeLabel = new JLabel(
                 "Welcome, " + currentUser.getName() + " (" + currentUser.getRole() + ")");
         welcomeLabel.setForeground(Color.WHITE);
         welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -66,27 +71,26 @@ public class DashboardFrame extends JFrame {
         content.setLayout(new BorderLayout());
         content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JTextArea summary = new JTextArea(currentUser.getProfileSummary());
-        summary.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        summary.setEditable(false);
-        summary.setLineWrap(true);
+        summaryArea = new JTextArea(currentUser.getProfileSummary());
+        summaryArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        summaryArea.setEditable(false);
+        summaryArea.setLineWrap(true);
 
-        content.add(summary, BorderLayout.NORTH);
+        content.add(summaryArea, BorderLayout.NORTH);
         return content;
     }
 
-    // Menu items differ per role — this is where role-based
-    // permissions from the assignment brief get reflected in the UI.
     private String[] getMenuItemsForRole() {
         switch (currentUser.getRole()) {
             case "Administrative Staff":
-                return new String[]{"Manage Users", "View Appointments", "Reports"};
+                return new String[]{"Manage Users", "View Appointments", "Reports", "Lab Requests", "Billing", "Billing Config", "Edit Profile"};
             case "Medical Manager":
-                return new String[]{"Manage Doctors", "Department Overview", "Reports"};
+                return new String[]{"Manage Doctors", "Manage Departments", "Reports", "Edit Profile"};
             case "Doctor":
-                return new String[]{"My Appointments", "Patient Records", "Prescriptions"};
+                return new String[]{"My Appointments", "Patient Records", "Prescriptions", "Lab Requests", "Edit Profile"};
             case "Patient":
-                return new String[]{"Book Appointment", "My Records", "My Prescriptions"};
+                return new String[]{"Book Appointment", "My Appointments", "My Records",
+                        "My Prescriptions", "My Consultation History", "My Bills", "Rate Doctor", "Edit Profile"};
             default:
                 return new String[]{};
         }
@@ -101,17 +105,77 @@ public class DashboardFrame extends JFrame {
                 new MyRecordsFrame(currentUser).setVisible(true);
                 break;
             case "My Prescriptions":
-                new MyPrescriptionsFrame().setVisible(true);
+                new MyPrescriptionsFrame(currentUser).setVisible(true);
                 break;
             case "My Appointments":
-                new DoctorAppointmentsFrame(currentUser).setVisible(true);
+                // Patients get their own bookable/cancellable list;
+                // Doctors get the read-only schedule view.
+                if (currentUser instanceof Patient) {
+                    new MyAppointmentsFrame(currentUser).setVisible(true);
+                } else {
+                    new DoctorAppointmentsFrame(currentUser).setVisible(true);
+                }
+                break;
+            case "Rate Doctor":
+                new RateVisitFrame(currentUser).setVisible(true);
+                break;
+            case "My Consultation History":
+                new ConsultationHistoryFrame(currentUser.getUserId()).setVisible(true);
+                break;
+            case "Billing":
+                new AdminBillingFrame().setVisible(true);
+                break;
+            case "Billing Config":
+                new AdminBillingConfigFrame().setVisible(true);
+                break;
+            case "My Bills":
+                new MyBillsFrame(currentUser).setVisible(true);
                 break;
             case "Manage Users":
                 new ManageUsersFrame().setVisible(true);
+                break;
+            case "View Appointments":
+                new AllAppointmentsFrame().setVisible(true);
+                break;
+            case "Reports":
+                new ReportsFrame().setVisible(true);
+                break;
+            case "Manage Doctors":
+                new ManageDoctorsFrame().setVisible(true);
+                break;
+            case "Manage Departments":
+                new DepartmentOverviewFrame().setVisible(true);
+                break;
+            case "Patient Records":
+                new PatientRecordsFrame(currentUser).setVisible(true);
+                break;
+            case "Prescriptions":
+                new DoctorPrescriptionsFrame(currentUser).setVisible(true);
+                break;
+            case "Lab Requests":
+                if (currentUser instanceof Doctor) {
+                    new DoctorLabRequestsFrame(currentUser).setVisible(true);
+                } else {
+                    new AdminLabRequestsFrame().setVisible(true);
+                }
+                break;
+            case "Edit Profile":
+                new EditUserFrame(currentAccount, this::refreshUserData).setVisible(true);
                 break;
             default:
                 JOptionPane.showMessageDialog(this, item + " screen coming soon.");
         }
     }
 
+    // Called after Edit Profile saves changes, so the header/summary
+    // reflect the update immediately without needing to log out and back in.
+    private void refreshUserData() {
+        Account refreshed = UserStore.findAccountByUsername(currentAccount.getUsername());
+        if (refreshed != null) {
+            currentAccount = refreshed;
+            currentUser = refreshed.getUser();
+            welcomeLabel.setText("Welcome, " + currentUser.getName() + " (" + currentUser.getRole() + ")");
+            summaryArea.setText(currentUser.getProfileSummary());
+        }
+    }
 }

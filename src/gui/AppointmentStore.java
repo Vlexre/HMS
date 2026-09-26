@@ -51,6 +51,31 @@ public class AppointmentStore {
         return "APT" + String.format("%03d", nextId++);
     }
 
+    // Used by Admin to confirm/cancel an appointment.
+    public static void updateStatus(String appointmentId, String status) {
+        for (Appointment appointment : appointments) {
+            if (appointment.getAppointmentId().equalsIgnoreCase(appointmentId)) {
+                appointment.setStatus(status);
+                break;
+            }
+        }
+        persist();
+    }
+
+    // Used by Patient to reschedule an appointment; puts it back to
+    // Pending so Admin/Doctor can re-confirm the new slot.
+    public static void updateSchedule(String appointmentId, String newDate, String newTime) {
+        for (Appointment appointment : appointments) {
+            if (appointment.getAppointmentId().equalsIgnoreCase(appointmentId)) {
+                appointment.setDate(newDate);
+                appointment.setTime(newTime);
+                appointment.setStatus("Pending");
+                break;
+            }
+        }
+        persist();
+    }
+
     private static void persist() {
         try {
             fileManager.saveAppointments(appointments, FILE_PATH);

@@ -1,7 +1,5 @@
 package persistence;
 
-import models.Appointment;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import models.Appointment;
 
 public class AppointmentFileManager {
 
@@ -62,7 +61,7 @@ public class AppointmentFileManager {
                 lineNumber++;
 
                 if (!line.trim().equals("")) {
-                    String[] parts = line.split(",");
+                    String[] parts = line.split(",", -1);
 
                     if (parts.length < 6) {
                         throw new InvalidAppointmentDataException(

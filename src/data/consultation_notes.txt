@@ -1,0 +1,2 @@
+CN001,P001,D001,2026-09-26,120/80,56,30,hi have somthing in his hart
+CN002,P002,D002,2026-09-26,120/80,75,36.7,Patient reports mild headache.

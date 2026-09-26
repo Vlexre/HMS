@@ -95,9 +95,6 @@ public class LoginFrame extends JFrame {
             return;
         }
 
-        // TODO: replace this stub with real lookup once file-based
-        // user storage (Kaung's part) is ready. For now this just
-        // demonstrates routing to the right dashboard by role.
         Account account = UserStore.findByUsername(username, password);
 
         if (account == null) {
@@ -108,11 +105,34 @@ public class LoginFrame extends JFrame {
         }
 
         User loggedInUser = account.getUser();
+
+        // Integration fix: the role dropdown used to be decorative — it was
+        // read into selectedRole but never checked, so any role could be
+        // picked and the user would still land on their real dashboard.
+        // We now confirm the dropdown matches the account's actual role
+        // (mapping the short dropdown label to the value getRole() returns).
+        if (!roleMatches(selectedRole, loggedInUser.getRole())) {
+            JOptionPane.showMessageDialog(this,
+                    "The selected role does not match this account's role ("
+                            + loggedInUser.getRole() + ").",
+                    "Login Failed", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         JOptionPane.showMessageDialog(this,
                 "Welcome, " + loggedInUser.getProfileSummary());
 
-        DashboardFrame dashboard = new DashboardFrame(loggedInUser);
+        DashboardFrame dashboard = new DashboardFrame(account);
         dispose();
+    }
+
+    // The dropdown shows short labels ("Admin Staff") while User.getRole()
+    // returns the full role name ("Administrative Staff"); the other three
+    // roles already match exactly.
+    private boolean roleMatches(String dropdownLabel, String actualRole) {
+        if ("Admin Staff".equals(dropdownLabel)) {
+            return "Administrative Staff".equals(actualRole);
+        }
+        return dropdownLabel != null && dropdownLabel.equals(actualRole);
     }
 
 }

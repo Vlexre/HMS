@@ -1,3 +1,6 @@
-Al,222,Patient,P001,la mal,la222@gmail.com,10235484,2054-15-12,57848
+Al,222,Patient,P001,ll,la222@gmail.com,10235484,2054-15-12,57848
 ali,333,Doctor,D001,ali,ali@gmail.com,55484648,dintest,549497414
 hh,hhh,Administrative Staff,A001,hhh hhh,hhh@gmail.com,01221584848,
+uu,uuu,Medical Manager,M001,uuu uu,uu@gmila.com,016665963699,Cardiology
+kk,kkk,Patient,P002,kkk,kk@gmail.com,10498484,2000-12-20,34849416
+pp,ppp,Doctor,D002,ppp,pp@gmail.com,1033269494,Cardiology,5548485164
